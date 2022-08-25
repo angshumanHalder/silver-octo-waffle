@@ -5,6 +5,7 @@ node_modules
 /.pnp
 .pnp.js
 /frontend/.parcel-cache
+/frontend/dist
 
 # build
 /out

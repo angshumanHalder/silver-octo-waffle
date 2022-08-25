@@ -2,7 +2,7 @@ import React from "react";
 // import "regenerator-runtime/runtime";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Polls from "../Polls/Polls";
-import CreatePoll from "../CreatePoll/CreatePoll";
+import { CreatePoll } from "../CreatePoll/CreatePoll";
 import Poll from "../Poll/Poll";
 
 export default function App() {

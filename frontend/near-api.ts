@@ -1,4 +1,4 @@
-import { connect, ConnectConfig, Contract, keyStores, Near, WalletConnection } from "near-api-js";
+import { keyStores, Near, WalletConnection } from "near-api-js";
 import { Gas, NEAR } from "near-units";
 import { getConfig } from "./near-config";
 

@@ -6,7 +6,7 @@ import { Layout } from "../../shared/components/Layout";
 export default function Polls() {
   const navigate = useNavigate();
 
-  const onPollClickHandler = (poll_id) => {
+  const onPollClickHandler = (poll_id: number) => {
     navigate(`/poll/${poll_id}`);
   };
 

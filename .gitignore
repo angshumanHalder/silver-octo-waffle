@@ -11,6 +11,13 @@ node_modules
 /out
 /dist
 /contract/target
+/frontend/ring-sig/target
+/frontend/ring-sig/**/*.rs.bk
+/frontend/ring-sig/Cargo.lock
+/frontend/ring-sig/bin/
+/frontend/ring-sig/pkg/
+/frontend/ring-sig/wasm-pack.log
+
 
 # keys
 /contract/neardev

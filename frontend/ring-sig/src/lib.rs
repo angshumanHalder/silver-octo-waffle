@@ -58,8 +58,8 @@ pub struct CandidateBallot {
     pub r: [u8; 32],
 }
 
-#[wasm_bindgen(js_name = "genKey")]
-pub fn gen_key() -> JsValue {
+#[wasm_bindgen(js_name = "genCandidate")]
+pub fn gen_candidate() -> JsValue {
     let pair = EDKeyGen::new();
     let keys = Candidate {
         secret: pair.private_key.to_bytes(),

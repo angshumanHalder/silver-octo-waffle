@@ -6,8 +6,8 @@ use digest::generic_array::typenum::U64;
 use digest::Digest;
 use rand_core::RngCore;
 
+use crate::random::RandomValuesRng;
 use crate::traits::Sign;
-use crate::RandomValuesRng;
 
 pub struct BLSAG {
     pub challenge: Scalar,

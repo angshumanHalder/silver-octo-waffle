@@ -5,7 +5,7 @@ use digest::{consts::U64, Digest};
 use rand_core::RngCore;
 use sha3::Keccak512;
 
-use crate::RandomValuesRng;
+use crate::random::RandomValuesRng;
 
 pub struct KeyGen {
     pub private_key: Scalar,

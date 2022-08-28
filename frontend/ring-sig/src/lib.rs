@@ -1,18 +1,20 @@
-//! Rust part of Ed25519 Quirks.
-
+mod ballot;
 mod keygen;
+mod random;
 mod signature;
-pub mod traits;
+mod traits;
 
-use curve25519_dalek::{ristretto::CompressedRistretto, scalar::Scalar};
+use ballot::Ballot;
+use curve25519_dalek::{
+    edwards::CompressedEdwardsY, ristretto::CompressedRistretto, scalar::Scalar,
+};
 use digest::Digest;
 use keygen::{EDKeyGen, KeyGen};
 use rand::AsByteSliceMut;
-use rand_core::{CryptoRng, RngCore};
 use serde::{Deserialize, Serialize};
 use sha3::Keccak512;
 use signature::BLSAG;
-use traits::Sign;
+use traits::{GenerateBallot, Sign};
 use wasm_bindgen::prelude::*;
 
 #[cfg(feature = "wee_alloc")]
@@ -29,43 +31,6 @@ extern "C" {
     #[wasm_bindgen(js_name = getRandomValues, js_namespace = crypto)]
     fn random_bytes(dest: &mut [u8]);
 }
-
-/// RNG based on `window.crypto.getRandomValues()`.
-pub struct RandomValuesRng;
-
-impl RngCore for RandomValuesRng {
-    fn next_u32(&mut self) -> u32 {
-        let mut bytes = [0_u8; 4];
-        random_bytes(&mut bytes);
-        let mut result = bytes[0] as u32;
-        for (i, &byte) in bytes.iter().enumerate().skip(1) {
-            result += (byte as u32) << (i * 8);
-        }
-        result
-    }
-
-    fn next_u64(&mut self) -> u64 {
-        let mut bytes = [0_u8; 8];
-        random_bytes(&mut bytes);
-        let mut result = bytes[0] as u64;
-        for (i, &byte) in bytes.iter().enumerate().skip(1) {
-            result += (byte as u64) << (i * 8);
-        }
-        result
-    }
-
-    fn fill_bytes(&mut self, dest: &mut [u8]) {
-        random_bytes(dest);
-    }
-
-    fn try_fill_bytes(&mut self, dest: &mut [u8]) -> Result<(), rand_core::Error> {
-        self.fill_bytes(dest);
-        Ok(())
-    }
-}
-
-impl CryptoRng for RandomValuesRng {}
-
 #[derive(Serialize, Deserialize)]
 pub struct Candidate {
     secret: [u8; 32],
@@ -85,6 +50,12 @@ pub struct Signature {
     pub responses: Vec<[u8; 32]>,
     pub ring: Vec<[u8; 32]>,
     pub key_image: [u8; 32],
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct CandidateBallot {
+    pub sa: [u8; 32],
+    pub r: [u8; 32],
 }
 
 #[wasm_bindgen(js_name = "genKey")]
@@ -115,15 +86,17 @@ pub fn gen_signature(
     key_image: JsValue,
     ring: JsValue,
     secret_index: u32,
-    message: String,
+    ballot: JsValue,
 ) -> JsValue {
     let private: [u8; 32] = private_key.into_serde().unwrap();
     let public: [u8; 32] = public_key.into_serde().unwrap();
     let image: [u8; 32] = key_image.into_serde().unwrap();
     let ring: Vec<[u8; 32]> = ring.into_serde().unwrap();
 
-    let mut message_hash = Keccak512::default();
-    message_hash.update(message.as_bytes());
+    let de_ballot: CandidateBallot = ballot.into_serde().unwrap();
+
+    let mut message_hash = Keccak512::default().chain(de_ballot.sa);
+    message_hash.update(de_ballot.r);
 
     let mut message_gen: Vec<u8> = message_hash
         .finalize()
@@ -145,14 +118,27 @@ pub fn gen_signature(
         &mut message_gen,
     );
 
-    // pub ring: Vec<[u8; 32]>,
-    // pub key_image: [u8; 32],
     let sig_responses: Vec<[u8; 32]> = blsag.responses.iter().map(|x| x.to_bytes()).collect();
+    let sig_ring = blsag.ring.iter().map(|x| x.compress().to_bytes()).collect();
     let signature = Signature {
         challenge: blsag.challenge.to_bytes(),
         responses: sig_responses,
-        ring,
+        ring: sig_ring,
         key_image: image,
     };
     JsValue::from_serde(&signature).unwrap()
+}
+
+#[wasm_bindgen(js_name = "genBallot")]
+pub fn gen_ballot(shared_public: JsValue, candidate_public: JsValue) -> JsValue {
+    let shared_key: [u8; 32] = shared_public.into_serde().unwrap();
+    let candidate_key: [u8; 32] = candidate_public.into_serde().unwrap();
+    let shared_pk = CompressedEdwardsY(shared_key).decompress().unwrap();
+    let candidate_pk = CompressedEdwardsY(candidate_key).decompress().unwrap();
+    let ballot = Ballot::generate_ballot::<Keccak512>(shared_pk, candidate_pk);
+    let candidate_ballot = CandidateBallot {
+        sa: ballot.sa.compress().to_bytes(),
+        r: ballot.sa.compress().to_bytes(),
+    };
+    JsValue::from_serde(&candidate_ballot).unwrap()
 }

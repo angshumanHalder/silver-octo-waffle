@@ -4,13 +4,21 @@
 node_modules
 /.pnp
 .pnp.js
-/frontend/.parcel-cache
-/frontend/dist
 
 # build
 /out
 /dist
+/frontend/dist
 /contract/target
+/frontend/ring-sig/target
+/frontend/ring-sig/**/*.rs.bk
+/frontend/ring-sig/Cargo.lock
+/frontend/ring-sig/bin/
+/frontend/ring-sig/pkg/
+/frontend/ring-sig/wasm-pack.log
+/contract/Cargo.lock
+/contract/.Cargo
+
 
 # keys
 /contract/neardev

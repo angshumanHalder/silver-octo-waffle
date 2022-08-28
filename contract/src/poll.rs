@@ -10,7 +10,6 @@ use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::serde::{Deserialize, Serialize};
 use near_sdk::{env, AccountId};
 use rand::AsByteSliceMut;
-use rand_core::OsRng;
 use sha3::Keccak512;
 use std::collections::{HashMap, HashSet};
 

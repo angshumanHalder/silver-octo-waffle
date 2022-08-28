@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
+use near_sdk::serde::{Deserialize, Serialize};
 use near_sdk::{env, near_bindgen};
 use poll::{Ballot, Candidate, Poll, Signature};
 
@@ -12,8 +13,9 @@ extern crate digest;
 extern crate rand_core;
 
 // Define the contract structure
+#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize)]
+#[serde(crate = "near_sdk::serde")]
 #[near_bindgen]
-#[derive(BorshDeserialize, BorshSerialize)]
 pub struct Contract {
     polls: Vec<Poll>,
 }

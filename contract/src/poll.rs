@@ -45,13 +45,15 @@ pub struct Signature {
     pub key_image: [u8; 32],
 }
 
-#[derive(BorshSerialize, BorshDeserialize)]
+#[derive(BorshSerialize, BorshDeserialize, Serialize, Deserialize)]
+#[serde(crate = "near_sdk::serde")]
 pub struct Vote {
     signature: Signature,
     ballot: Ballot,
 }
 
-#[derive(BorshSerialize, BorshDeserialize)]
+#[derive(BorshSerialize, BorshDeserialize, Serialize, Deserialize)]
+#[serde(crate = "near_sdk::serde")]
 pub struct Poll {
     pub poll_id: u32,
     pub poll_owner: AccountId,

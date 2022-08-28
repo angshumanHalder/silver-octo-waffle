@@ -4,6 +4,8 @@ import { Box, Button, FormControl, FormErrorMessage, FormLabel, HStack, Input, V
 import { Layout } from "../../shared/components/Layout";
 import { AddIcon, MinusIcon } from "@chakra-ui/icons";
 import * as Yup from "yup";
+import { generateCandidate } from "../../utils/ring-sig";
+import { createPoll } from "../../contract/silver-octo-waffle";
 
 export const CreatePoll = () => {
   const CreatePollSchema = Yup.object().shape({
@@ -14,6 +16,20 @@ export const CreatePoll = () => {
       })
     ),
   });
+
+  const handleSubmit = async (values: { candidates: { partyName: string; name: string }[] }) => {
+    const shared = generateCandidate();
+    const candidateList = values.candidates.map((candidate) => {
+      const c = {
+        name: candidate.name,
+        party_name: candidate.partyName,
+        public_key: generateCandidate().public,
+      };
+      return c;
+    });
+    const pollId = await createPoll({ candidates: candidateList, shared_sk: shared.secret, shared_pk: shared.public });
+    console.log(pollId);
+  };
 
   const renderField = (
     idx: number,
@@ -65,11 +81,7 @@ export const CreatePoll = () => {
 
   return (
     <Layout>
-      <Formik
-        initialValues={{ candidates: [{ partyName: "", name: "" }] }}
-        validationSchema={CreatePollSchema}
-        onSubmit={(values) => console.log(JSON.stringify(values))}
-      >
+      <Formik initialValues={{ candidates: [{ partyName: "", name: "" }] }} validationSchema={CreatePollSchema} onSubmit={handleSubmit}>
         {({ errors, touched, values }) => {
           return (
             <Form>

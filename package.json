@@ -1,0 +1,18 @@
+{
+  "name": "voting-system",
+  "version": "1.0.0",
+  "license": "(MIT AND Apache-2.0)",
+  "scripts": {
+    "start": "cd frontend && yarn start",
+    "deploy": "yarn build:contract && cd contract && near dev-deploy --wasmFile ./target/wasm32-unknown-unknown/release/silver_octo_waffle.wasm",
+    "build": "yarn build:contract && run build:web",
+    "build:web": "cd frontend && yarn build",
+    "build:contract": "cd contract && rustup target add wasm32-unknown-unknown && cargo build --all --target wasm32-unknown-unknown --release",
+    "test:unit": "cd contract && cargo test -- --nocapture",
+    "deps-install": "yarn && cd frontend && yarn && cd .."
+  },
+  "devDependencies": {
+    "near-cli": "^3.3.0"
+  },
+  "dependencies": {}
+}

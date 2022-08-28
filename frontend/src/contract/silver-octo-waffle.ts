@@ -8,6 +8,6 @@ export interface Candidate {
 
 export type SharedSK_PK = Array<number>;
 
-export async function createPoll(args: { candidates: Array<Candidate>; shared_secret: SharedSK_PK; shared_public: SharedSK_PK }): Promise<any> {
+export async function createPoll(args: { candidates: Array<Candidate>; shared_sk: SharedSK_PK; shared_pk: SharedSK_PK }) {
   return call("create_poll", args);
 }

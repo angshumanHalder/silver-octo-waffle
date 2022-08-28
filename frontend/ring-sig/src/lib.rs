@@ -46,16 +46,16 @@ pub struct Voter {
 
 #[derive(Serialize, Deserialize)]
 pub struct Signature {
-    pub challenge: [u8; 32],
-    pub responses: Vec<[u8; 32]>,
-    pub ring: Vec<[u8; 32]>,
-    pub key_image: [u8; 32],
+    challenge: [u8; 32],
+    responses: Vec<[u8; 32]>,
+    ring: Vec<[u8; 32]>,
+    key_image: [u8; 32],
 }
 
 #[derive(Serialize, Deserialize)]
 pub struct CandidateBallot {
-    pub sa: [u8; 32],
-    pub r: [u8; 32],
+    sa: [u8; 32],
+    r: [u8; 32],
 }
 
 #[wasm_bindgen(js_name = "genCandidate")]

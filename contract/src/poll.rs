@@ -8,7 +8,7 @@ use digest::generic_array::typenum::U64;
 use digest::Digest;
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::serde::{Deserialize, Serialize};
-use near_sdk::{env, AccountId};
+use near_sdk::{env, AccountId, Timestamp};
 use rand::AsByteSliceMut;
 use sha3::Keccak512;
 use std::collections::{HashMap, HashSet};
@@ -55,6 +55,7 @@ pub struct Vote {
 #[derive(BorshSerialize, BorshDeserialize, Clone)]
 pub struct Poll {
     pub poll_id: u32,
+    pub created_at: Timestamp,
     pub poll_owner: AccountId,
     pub poll_status: PollStatus,
     pub candidates: Vec<Candidate>,
@@ -85,6 +86,7 @@ impl Poll {
 
         Poll {
             poll_id,
+            created_at: env::block_timestamp(),
             poll_owner,
             shared_sk,
             shared_pk,

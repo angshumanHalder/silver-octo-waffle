@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
+use near_sdk::Timestamp;
 use near_sdk::{env, near_bindgen, serde::Deserialize, serde::Serialize};
 use poll::{Ballot, Candidate, Poll, PollStatus, Signature};
 
@@ -15,6 +16,7 @@ extern crate rand_core;
 #[serde(crate = "near_sdk::serde")]
 pub struct SerdePoll {
     pub poll_id: u32,
+    pub created_at: Timestamp,
     pub poll_owner: String,
     pub poll_status: PollStatus,
     pub candidates: Vec<Candidate>,
@@ -59,6 +61,7 @@ impl Contract {
             .iter()
             .map(|poll| SerdePoll {
                 poll_id: poll.poll_id,
+                created_at: poll.created_at,
                 poll_owner: poll.poll_owner.to_string().clone(),
                 poll_status: poll.poll_status,
                 candidates: poll.candidates.clone(),

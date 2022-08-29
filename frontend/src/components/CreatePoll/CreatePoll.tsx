@@ -1,35 +1,14 @@
-import React from "react";
 import { Field, FieldArray, Form, Formik, FormikErrors, FormikTouched, getIn, useFormik } from "formik";
 import { Box, Button, FormControl, FormErrorMessage, FormLabel, HStack, Input, VStack } from "@chakra-ui/react";
 import { Layout } from "../../shared/components/Layout";
 import { AddIcon, MinusIcon } from "@chakra-ui/icons";
-import * as Yup from "yup";
-import { generateCandidate } from "../../utils/ring-sig";
-import { createPoll } from "../../contract/silver-octo-waffle";
+import { useCreatePoll } from "./useCreatePoll";
 
 export const CreatePoll = () => {
-  const CreatePollSchema = Yup.object().shape({
-    candidates: Yup.array().of(
-      Yup.object().shape({
-        partyName: Yup.string().required("Party Name is required"),
-        name: Yup.string().required("Candidate Name is required"),
-      })
-    ),
-  });
-
-  const handleSubmit = async (values: { candidates: { partyName: string; name: string }[] }) => {
-    const shared = generateCandidate();
-    const candidateList = values.candidates.map((candidate) => {
-      const c = {
-        name: candidate.name,
-        party_name: candidate.partyName,
-        public_key: generateCandidate().public,
-      };
-      return c;
-    });
-    const pollId = await createPoll({ candidates: candidateList, shared_sk: shared.secret, shared_pk: shared.public });
-    console.log(pollId);
-  };
+  const {
+    state: { CreatePollSchema },
+    actions: { handleSubmit },
+  } = useCreatePoll();
 
   const renderField = (
     idx: number,

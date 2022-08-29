@@ -2,8 +2,8 @@ import React from "react";
 import { Heading, Avatar, Box, Center, Text, Stack, Button, Link, Badge, useColorModeValue, HStack } from "@chakra-ui/react";
 
 interface CardProps {
-  name: string;
-  partyName: string;
+  name: String;
+  partyName: String;
   showResult: boolean;
   votes?: number;
 }

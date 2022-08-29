@@ -1,4 +1,5 @@
 import { keyStores, Near, WalletConnection } from "near-api-js";
+import { FinalExecutionOutcome } from "near-api-js/lib/providers";
 import { Gas, NEAR } from "near-units";
 import { getConfig } from "./near-config";
 
@@ -47,7 +48,7 @@ export async function call(
     walletCallbackUrl?: string;
     stringify?: (input: any) => Buffer;
   }
-): Promise<any> {
+): Promise<FinalExecutionOutcome> {
   const currentUser = window.walletConnection.account();
   if (!currentUser) {
     throw new Error("Must sign in before calling a change method");

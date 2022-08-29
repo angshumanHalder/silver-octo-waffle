@@ -4,6 +4,7 @@ import { initContract } from "./near-api";
 import { ChakraProvider, ColorModeScript } from "@chakra-ui/react";
 import theme from "./theme";
 import init from "ring-sig";
+import { RecoilRoot } from "recoil";
 
 const reactRoot = createRoot(document.querySelector("#root") as HTMLElement);
 const initialize = async () => {
@@ -14,7 +15,9 @@ const initialize = async () => {
       <>
         <ColorModeScript initialColorMode="dark" />
         <ChakraProvider theme={theme}>
-          <App />
+          <RecoilRoot>
+            <App />
+          </RecoilRoot>
         </ChakraProvider>
       </>
     );

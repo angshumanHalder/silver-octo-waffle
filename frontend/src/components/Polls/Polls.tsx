@@ -1,27 +1,26 @@
 import { Button, Table, TableContainer, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react";
-import React from "react";
-import { useNavigate } from "react-router-dom";
 import { Layout } from "../../shared/components/Layout";
+import { usePolls } from "./usePolls.logic";
 
 export default function Polls() {
-  const navigate = useNavigate();
+  const {
+    state: { polls },
+    actions: { onPollClickHandler },
+  } = usePolls();
+  console.log(polls);
 
-  const onPollClickHandler = (poll_id: number) => {
-    navigate(`/poll/${poll_id}`);
-  };
-
-  const renderRow = () => {
-    return (
-      <Tr>
-        <Td>0</Td>
-        <Td>test</Td>
+  const renderRows = () => {
+    return polls.map((poll) => (
+      <Tr key={poll.poll_id}>
+        <Td>{poll.poll_id}</Td>
+        <Td>{poll.poll_status}</Td>
         <Td>
-          <Button variant="solid" colorScheme="telegram" onClick={() => onPollClickHandler(0)}>
+          <Button variant="solid" colorScheme="telegram" onClick={() => onPollClickHandler(poll.poll_id)}>
             Go to Poll
           </Button>
         </Td>
       </Tr>
-    );
+    ));
   };
 
   return (
@@ -35,7 +34,7 @@ export default function Polls() {
               <Th>Action</Th>
             </Tr>
           </Thead>
-          <Tbody>{renderRow()}</Tbody>
+          <Tbody>{renderRows()}</Tbody>
         </Table>
       </TableContainer>
     </Layout>

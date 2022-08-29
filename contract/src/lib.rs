@@ -1,9 +1,8 @@
 use std::collections::HashMap;
 
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
-use near_sdk::serde::{Deserialize, Serialize};
-use near_sdk::{env, near_bindgen};
-use poll::{Ballot, Candidate, Poll, Signature};
+use near_sdk::{env, near_bindgen, serde::Deserialize, serde::Serialize};
+use poll::{Ballot, Candidate, Poll, PollStatus, Signature};
 
 mod poll;
 pub(crate) mod prelude;
@@ -12,9 +11,18 @@ extern crate curve25519_dalek;
 extern crate digest;
 extern crate rand_core;
 
-// Define the contract structure
-#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 #[serde(crate = "near_sdk::serde")]
+pub struct SerdePoll {
+    pub poll_id: u32,
+    pub poll_owner: String,
+    pub poll_status: PollStatus,
+    pub candidates: Vec<Candidate>,
+    pub results: HashMap<String, u32>,
+}
+
+// Define the contract structure
+#[derive(BorshDeserialize, BorshSerialize)]
 #[near_bindgen]
 pub struct Contract {
     polls: Vec<Poll>,
@@ -46,38 +54,47 @@ impl Contract {
         poll_id
     }
 
-    pub fn start_poll(&mut self, poll_id: usize) -> bool {
-        let poll = &mut self.polls[poll_id];
-        poll.change_poll_status(poll::PollStatus::STARTED);
-        true
+    pub fn get_polls(&self) -> Vec<SerdePoll> {
+        self.polls
+            .iter()
+            .map(|poll| SerdePoll {
+                poll_id: poll.poll_id,
+                poll_owner: poll.poll_owner.to_string().clone(),
+                poll_status: poll.poll_status,
+                candidates: poll.candidates.clone(),
+                results: poll.results.clone(),
+            })
+            .collect()
     }
 
-    pub fn end_poll(&mut self, poll_id: usize) -> bool {
-        if poll_id >= self.polls.len() {
-            return false;
-        }
+    pub fn start_poll(&mut self, poll_id: usize) {
         let poll = &mut self.polls[poll_id];
-        poll.change_poll_status(poll::PollStatus::ENDED)
+        poll.change_poll_status(poll::PollStatus::STARTED);
+    }
+
+    pub fn end_poll(&mut self, poll_id: usize) {
+        if poll_id <= self.polls.len() {
+            let poll = &mut self.polls[poll_id];
+            poll.change_poll_status(poll::PollStatus::ENDED);
+        }
     }
 
     pub fn get_poll_status(&mut self, poll_id: usize) -> i32 {
         self.polls[poll_id].poll_status as i32
     }
 
-    pub fn add_voter(&mut self, poll_id: usize, voter: [u8; 32]) -> bool {
-        if poll_id >= self.polls.len() {
-            return false;
+    pub fn add_voter(&mut self, poll_id: usize, voter: [u8; 32]) {
+        if poll_id <= self.polls.len() {
+            let poll = &mut self.polls[poll_id];
+            poll.add_voter(voter);
         }
-        let poll = &mut self.polls[poll_id];
-        poll.add_voter(voter)
     }
 
-    pub fn vote(&mut self, poll_id: usize, ballot: Ballot, signature: Signature) -> bool {
-        if poll_id >= self.polls.len() {
-            return false;
+    pub fn vote(&mut self, poll_id: usize, ballot: Ballot, signature: Signature) {
+        if poll_id <= self.polls.len() {
+            let poll = &mut self.polls[poll_id];
+            poll.vote(ballot, signature);
         }
-        let poll = &mut self.polls[poll_id];
-        poll.vote(ballot, signature)
     }
 
     pub fn tally(&mut self, poll_id: usize) -> HashMap<String, u32> {

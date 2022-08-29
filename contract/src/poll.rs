@@ -21,7 +21,7 @@ pub enum PollStatus {
     ENDED = 2,
 }
 
-#[derive(Serialize, Deserialize, BorshDeserialize, BorshSerialize)]
+#[derive(Serialize, Deserialize, BorshDeserialize, BorshSerialize, Clone)]
 #[serde(crate = "near_sdk::serde")]
 pub struct Candidate {
     pub name: String,
@@ -29,14 +29,14 @@ pub struct Candidate {
     pub public_key: [u8; 32],
 }
 
-#[derive(Serialize, Deserialize, BorshDeserialize, BorshSerialize)]
+#[derive(Serialize, Deserialize, BorshDeserialize, BorshSerialize, Clone)]
 #[serde(crate = "near_sdk::serde")]
 pub struct Ballot {
     pub sa: [u8; 32],
     pub r: [u8; 32],
 }
 
-#[derive(Serialize, Deserialize, BorshSerialize, BorshDeserialize)]
+#[derive(Serialize, Deserialize, BorshSerialize, BorshDeserialize, Clone)]
 #[serde(crate = "near_sdk::serde")]
 pub struct Signature {
     pub challenge: [u8; 32],
@@ -45,15 +45,14 @@ pub struct Signature {
     pub key_image: [u8; 32],
 }
 
-#[derive(BorshSerialize, BorshDeserialize, Serialize, Deserialize)]
+#[derive(BorshSerialize, BorshDeserialize, Serialize, Deserialize, Clone)]
 #[serde(crate = "near_sdk::serde")]
 pub struct Vote {
     signature: Signature,
     ballot: Ballot,
 }
 
-#[derive(BorshSerialize, BorshDeserialize, Serialize, Deserialize)]
-#[serde(crate = "near_sdk::serde")]
+#[derive(BorshSerialize, BorshDeserialize, Clone)]
 pub struct Poll {
     pub poll_id: u32,
     pub poll_owner: AccountId,

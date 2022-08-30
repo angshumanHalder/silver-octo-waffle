@@ -23,6 +23,6 @@ export const generateSignature = (
   return genSignature(private_key, public_key, key_image, ring, secret_index, ballot) as Signature;
 };
 
-export const generatePublicKeyFromSecret = (private_key: Array<number>) => {
+export const generateKeysFromSecret = (private_key: Array<number>) => {
   return genVoterFromSecret(private_key) as Voter;
 };

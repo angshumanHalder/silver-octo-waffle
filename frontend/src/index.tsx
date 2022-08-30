@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client";
-import App from "./components/App/App";
+import App from "./pages/App/App";
 import { initContract } from "./near-api";
 import { ChakraProvider, ColorModeScript } from "@chakra-ui/react";
 import theme from "./theme";

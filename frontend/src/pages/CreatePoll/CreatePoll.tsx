@@ -1,7 +1,7 @@
-import { Field, FieldArray, Form, Formik, FormikErrors, FormikTouched, getIn, useFormik } from "formik";
-import { Box, Button, FormControl, FormErrorMessage, FormLabel, HStack, Input, VStack } from "@chakra-ui/react";
-import { Layout } from "../../shared/components/Layout";
 import { AddIcon, MinusIcon } from "@chakra-ui/icons";
+import { Box, Button, FormControl, FormErrorMessage, FormLabel, HStack, Input } from "@chakra-ui/react";
+import { Field, FieldArray, Form, Formik, FormikErrors, FormikTouched, getIn } from "formik";
+import { Layout } from "../../shared/components/Layout";
 import { useCreatePoll } from "./useCreatePoll";
 
 export const CreatePoll = () => {

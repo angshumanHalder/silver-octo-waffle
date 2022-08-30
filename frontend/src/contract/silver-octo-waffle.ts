@@ -10,3 +10,15 @@ export async function createPoll(args: { candidates: Array<Candidate>; shared_sk
 export async function getPolls(): Promise<Poll[]> {
   return view("get_polls", {}) as Promise<Poll[]>;
 }
+
+export async function startPoll(args: { poll_id: number }): Promise<FinalExecutionOutcome> {
+  return call("start_poll", args);
+}
+
+export async function endPoll(args: { poll_id: number }): Promise<FinalExecutionOutcome> {
+  return call("end_poll", args);
+}
+
+export async function addVoter(args: { poll_id: number; voter: Array<number> }): Promise<FinalExecutionOutcome> {
+  return call("add_voter", args);
+}

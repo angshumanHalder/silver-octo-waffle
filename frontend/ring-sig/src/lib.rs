@@ -79,6 +79,18 @@ pub fn gen_voter() -> JsValue {
     JsValue::from_serde(&voter).unwrap()
 }
 
+#[wasm_bindgen(js_name = "genVoterFromSecret")]
+pub fn gen_voter_from_secret(secret: JsValue) -> JsValue {
+    let secret_key: [u8; 32] = secret.into_serde().unwrap();
+    let keys = KeyGen::gen_keys_from_secret::<Keccak512>(secret_key);
+    let voter = Voter {
+        secret: keys.private_key.to_bytes(),
+        public: keys.public_key.compress().to_bytes(),
+        image: keys.key_image.compress().to_bytes(),
+    };
+    JsValue::from_serde(&voter).unwrap()
+}
+
 #[wasm_bindgen(js_name = "genSignature")]
 pub fn gen_signature(
     private_key: JsValue,

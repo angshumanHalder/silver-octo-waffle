@@ -117,6 +117,36 @@ impl Poll {
         if self.seen_key_images.contains(&signature.key_image.clone()) {
             return false;
         }
+        if !self.voters.contains(&signature.key_image) {}
+        if self.seen_key_images.contains(&signature.key_image) {
+            self.defaulters.push(signature.key_image);
+        }
+        let challenge: Scalar = Scalar::from_bits(signature.challenge);
+        let responses: Vec<Scalar> = signature
+            .responses
+            .iter()
+            .map(|x| Scalar::from_bits(x.clone()))
+            .collect();
+        let ring: Vec<RistrettoPoint> = signature
+            .ring
+            .iter()
+            .map(|x| CompressedRistretto(x.clone()).decompress().unwrap())
+            .collect();
+        let key_image = CompressedRistretto(signature.key_image.clone())
+            .decompress()
+            .unwrap();
+        let mut message_hash = Keccak512::default().chain(CompressedEdwardsY(ballot.r).as_bytes());
+        message_hash.update(ballot.sa);
+
+        let message: Vec<u8> = message_hash
+            .finalize()
+            .as_byte_slice_mut()
+            .iter()
+            .cloned()
+            .collect();
+
+        let is_verified = verify::<Keccak512>(challenge, responses, ring, key_image, &message);
+        if !is_verified {}
         self.votes.push(Vote { ballot, signature });
         true
     }
@@ -124,44 +154,6 @@ impl Poll {
     pub fn tally(&mut self) {
         let shared_sk = Scalar::from_bits(self.shared_sk);
         for vote in &self.votes {
-            if !self.voters.contains(&vote.signature.key_image) {
-                continue;
-            }
-            if self.seen_key_images.contains(&vote.signature.key_image) {
-                self.defaulters.push(vote.signature.key_image);
-                continue;
-            }
-            let challenge: Scalar = Scalar::from_bits(vote.signature.challenge);
-            let responses: Vec<Scalar> = vote
-                .signature
-                .responses
-                .iter()
-                .map(|x| Scalar::from_bits(x.clone()))
-                .collect();
-            let ring: Vec<RistrettoPoint> = vote
-                .signature
-                .ring
-                .iter()
-                .map(|x| CompressedRistretto(x.clone()).decompress().unwrap())
-                .collect();
-            let key_image = CompressedRistretto(vote.signature.key_image.clone())
-                .decompress()
-                .unwrap();
-            let mut message_hash =
-                Keccak512::default().chain(CompressedEdwardsY(vote.ballot.r).as_bytes());
-            message_hash.update(vote.ballot.sa);
-
-            let message: Vec<u8> = message_hash
-                .finalize()
-                .as_byte_slice_mut()
-                .iter()
-                .cloned()
-                .collect();
-
-            let is_verified = verify::<Keccak512>(challenge, responses, ring, key_image, &message);
-            if !is_verified {
-                continue;
-            }
             let r = CompressedEdwardsY(vote.ballot.r).decompress().unwrap();
             let sa = CompressedEdwardsY(vote.ballot.sa).decompress().unwrap();
             for candidate in self.candidates.iter() {

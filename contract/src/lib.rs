@@ -72,14 +72,14 @@ impl Contract {
 
     pub fn start_poll(&mut self, poll_id: usize) {
         let poll = &mut self.polls[poll_id];
+        require!(env::signer_account_id() == poll.poll_owner);
         poll.change_poll_status(poll::PollStatus::STARTED);
     }
 
     pub fn end_poll(&mut self, poll_id: usize) {
-        if poll_id <= self.polls.len() {
-            let poll = &mut self.polls[poll_id];
-            poll.change_poll_status(poll::PollStatus::ENDED);
-        }
+        let poll = &mut self.polls[poll_id];
+        require!(env::signer_account_id() == poll.poll_owner);
+        poll.change_poll_status(poll::PollStatus::ENDED);
     }
 
     pub fn get_poll_status(&mut self, poll_id: usize) -> i32 {
@@ -87,23 +87,16 @@ impl Contract {
     }
 
     pub fn add_voter(&mut self, poll_id: usize, voter: [u8; 32]) {
-        if poll_id <= self.polls.len() {
-            let poll = &mut self.polls[poll_id];
-            poll.add_voter(voter);
-        }
+        let poll = &mut self.polls[poll_id];
+        poll.add_voter(voter);
     }
 
     pub fn vote(&mut self, poll_id: usize, ballot: Ballot, signature: Signature) {
-        if poll_id <= self.polls.len() {
-            let poll = &mut self.polls[poll_id];
-            poll.vote(ballot, signature);
-        }
+        let poll = &mut self.polls[poll_id];
+        poll.vote(ballot, signature);
     }
 
     pub fn tally(&mut self, poll_id: usize) -> HashMap<String, u32> {
-        if poll_id >= self.polls.len() {
-            return HashMap::new();
-        }
         let _ = &self.polls[poll_id].tally();
         return self.polls[poll_id].results.clone();
     }

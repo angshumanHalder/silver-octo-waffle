@@ -13,7 +13,7 @@ use rand::AsByteSliceMut;
 use sha3::Keccak512;
 use std::collections::{HashMap, HashSet};
 
-#[derive(Serialize, Deserialize, BorshDeserialize, BorshSerialize, Clone, Copy)]
+#[derive(Serialize, Deserialize, BorshDeserialize, BorshSerialize, Clone, Copy, PartialEq, Eq)]
 #[serde(crate = "near_sdk::serde")]
 pub enum PollStatus {
     REGISTERED = 0,

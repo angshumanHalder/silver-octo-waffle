@@ -93,11 +93,14 @@ impl Contract {
 
     pub fn vote(&mut self, poll_id: usize, ballot: Ballot, signature: Signature) {
         let poll = &mut self.polls[poll_id];
+        require!(poll.poll_status == PollStatus::STARTED);
         poll.vote(ballot, signature);
     }
 
     pub fn tally(&mut self, poll_id: usize) -> HashMap<String, u32> {
-        let _ = &self.polls[poll_id].tally();
+        let poll = &mut self.polls[poll_id];
+        require!(poll.poll_status == PollStatus::ENDED);
+        poll.tally();
         return self.polls[poll_id].results.clone();
     }
 }

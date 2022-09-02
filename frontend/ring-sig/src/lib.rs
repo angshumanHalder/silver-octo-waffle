@@ -11,8 +11,6 @@ use curve25519_dalek::{
 use digest::Digest;
 use keygen::{EDKeyGen, KeyGen};
 use rand::AsByteSliceMut;
-use rand_core::RngCore;
-use random::RandomValuesRng;
 use serde::{Deserialize, Serialize};
 use sha3::Keccak512;
 use signature::BLSAG;

@@ -13,7 +13,9 @@ use rand::AsByteSliceMut;
 use sha3::Keccak512;
 use std::collections::{HashMap, HashSet};
 
-#[derive(Serialize, Deserialize, BorshDeserialize, BorshSerialize, Clone, Copy, PartialEq, Eq)]
+#[derive(
+    Serialize, Deserialize, BorshDeserialize, BorshSerialize, Clone, Copy, PartialEq, Eq, Debug,
+)]
 #[serde(crate = "near_sdk::serde")]
 pub enum PollStatus {
     REGISTERED = 0,
@@ -117,9 +119,10 @@ impl Poll {
         if self.seen_key_images.contains(&signature.key_image.clone()) {
             return false;
         }
-        if !self.voters.contains(&signature.key_image) {}
-        if self.seen_key_images.contains(&signature.key_image) {
-            self.defaulters.push(signature.key_image);
+        for r in signature.ring.iter() {
+            if !self.voters.contains(r) {
+                return false;
+            }
         }
         let challenge: Scalar = Scalar::from_bits(signature.challenge);
         let responses: Vec<Scalar> = signature
@@ -127,6 +130,7 @@ impl Poll {
             .iter()
             .map(|x| Scalar::from_bits(x.clone()))
             .collect();
+
         let ring: Vec<RistrettoPoint> = signature
             .ring
             .iter()
@@ -135,7 +139,7 @@ impl Poll {
         let key_image = CompressedRistretto(signature.key_image.clone())
             .decompress()
             .unwrap();
-        let mut message_hash = Keccak512::default().chain(CompressedEdwardsY(ballot.r).as_bytes());
+        let mut message_hash = Keccak512::default().chain(ballot.r);
         message_hash.update(ballot.sa);
 
         let message: Vec<u8> = message_hash
@@ -145,7 +149,8 @@ impl Poll {
             .cloned()
             .collect();
 
-        let is_verified = verify::<Keccak512>(challenge, responses, ring, key_image, &message);
+        let is_verified =
+            verify_ballot::<Keccak512>(challenge, responses, ring, key_image, &message);
         if !is_verified {}
         self.votes.push(Vote { ballot, signature });
         true
@@ -157,7 +162,7 @@ impl Poll {
             let r = CompressedEdwardsY(vote.ballot.r).decompress().unwrap();
             let sa = CompressedEdwardsY(vote.ballot.sa).decompress().unwrap();
             for candidate in self.candidates.iter() {
-                let candidate_ballot = verify_ballot::<Keccak512>(
+                let candidate_ballot = compute_ballot::<Keccak512>(
                     shared_sk,
                     CompressedEdwardsY(candidate.public_key)
                         .decompress()
@@ -169,13 +174,14 @@ impl Poll {
                     let v = self.results.get(&candidate.party_name).unwrap();
                     //  find a better way to calculate the votes
                     self.results.insert(candidate.party_name.clone(), v + 1);
+                    break;
                 }
             }
         }
     }
 }
 
-fn verify_ballot<Hash: Digest<OutputSize = U64> + Clone + Default>(
+fn compute_ballot<Hash: Digest<OutputSize = U64> + Clone + Default>(
     shared_sk: Scalar,
     candidate_pk: EdwardsPoint,
     r: EdwardsPoint,
@@ -188,7 +194,7 @@ fn verify_ballot<Hash: Digest<OutputSize = U64> + Clone + Default>(
     sa == sa_generated
 }
 
-fn verify<Hash: Digest<OutputSize = U64> + Clone + Default>(
+fn verify_ballot<Hash: Digest<OutputSize = U64> + Clone + Default>(
     challenge: Scalar,
     responses: Vec<Scalar>,
     ring: Vec<RistrettoPoint>,

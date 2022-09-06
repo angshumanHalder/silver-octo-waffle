@@ -54,8 +54,8 @@ pub struct Signature {
 
 #[derive(Serialize, Deserialize)]
 pub struct CandidateBallot {
-    sa: [u8; 32],
     r: [u8; 32],
+    sa: [u8; 32],
 }
 
 #[wasm_bindgen(js_name = "genCandidate")]
@@ -71,6 +71,18 @@ pub fn gen_candidate() -> JsValue {
 #[wasm_bindgen(js_name = "genVoter")]
 pub fn gen_voter() -> JsValue {
     let keys = KeyGen::new::<Keccak512>();
+    let voter = Voter {
+        secret: keys.private_key.to_bytes(),
+        public: keys.public_key.compress().to_bytes(),
+        image: keys.key_image.compress().to_bytes(),
+    };
+    JsValue::from_serde(&voter).unwrap()
+}
+
+#[wasm_bindgen(js_name = "genVoterFromSecret")]
+pub fn gen_voter_from_secret(secret: JsValue) -> JsValue {
+    let secret_key: [u8; 32] = secret.into_serde().unwrap();
+    let keys = KeyGen::gen_keys_from_secret::<Keccak512>(secret_key);
     let voter = Voter {
         secret: keys.private_key.to_bytes(),
         public: keys.public_key.compress().to_bytes(),
@@ -95,8 +107,8 @@ pub fn gen_signature(
 
     let de_ballot: CandidateBallot = ballot.into_serde().unwrap();
 
-    let mut message_hash = Keccak512::default().chain(de_ballot.sa);
-    message_hash.update(de_ballot.r);
+    let mut message_hash = Keccak512::default().chain(de_ballot.r);
+    message_hash.update(de_ballot.sa);
 
     let mut message_gen: Vec<u8> = message_hash
         .finalize()
@@ -138,7 +150,7 @@ pub fn gen_ballot(shared_public: JsValue, candidate_public: JsValue) -> JsValue 
     let ballot = Ballot::generate_ballot::<Keccak512>(shared_pk, candidate_pk);
     let candidate_ballot = CandidateBallot {
         sa: ballot.sa.compress().to_bytes(),
-        r: ballot.sa.compress().to_bytes(),
+        r: ballot.r.compress().to_bytes(),
     };
     JsValue::from_serde(&candidate_ballot).unwrap()
 }

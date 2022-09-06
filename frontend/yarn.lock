@@ -1267,6 +1267,11 @@
   resolved "https://registry.yarnpkg.com/@types/history/-/history-4.7.11.tgz#56588b17ae8f50c53983a524fc3cc47437969d64"
   integrity sha512-qjDJRrmvBMiTx+jyLxvLfJU7UznFuokDv4f3WRuriHKERccVpFU+8XMQUAbDzoiJCsmexxRExQeMwwCdamSKDA==
 
+"@types/jabber@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@types/jabber/-/jabber-1.2.0.tgz#6e3dbc5741d093ffe84edde56d87b121dce6a5ea"
+  integrity sha512-7lknvb0FFVCLgorYUh1RjJ/ps6trEQcr8GueQ/4tEPa4p3zzkKgcQaBUhswZI+wviHtahWLIrJO8mhL6RsIPbQ==
+
 "@types/lodash.mergewith@4.6.6":
   version "4.6.6"
   resolved "https://registry.yarnpkg.com/@types/lodash.mergewith/-/lodash.mergewith-4.6.6.tgz#c4698f5b214a433ff35cb2c75ee6ec7f99d79f10"
@@ -1298,6 +1303,11 @@
   version "15.7.5"
   resolved "https://registry.yarnpkg.com/@types/prop-types/-/prop-types-15.7.5.tgz#5f19d2b85a98e9558036f6a3cacc8819420f05cf"
   integrity sha512-JCB8C6SnDoQf0cNycqd/35A7MjcnK+ZTqE7judS6o7utxUCg6imJg3QK2qzHKszlTjcj2cn+NwMB2i96ubpj7w==
+
+"@types/random-words@^1.1.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@types/random-words/-/random-words-1.1.2.tgz#4ffe4da4817b4629d8802c8ac16466783e745c6e"
+  integrity sha512-gULpJ68bNovfBWPWNNhwJgd/GcKdfkPpXXQGgACQWffgy6LRiJB4+4s/IslhFJKQvb5wBlnlOwFJ6RawHU5z3A==
 
 "@types/react-dom@^18.0.6":
   version "18.0.6"
@@ -2699,6 +2709,11 @@ is-weakref@^1.0.2:
   dependencies:
     call-bind "^1.0.2"
 
+jabber@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/jabber/-/jabber-1.4.0.tgz#5837aefc9b62717918adb112d56e91ee158b95c0"
+  integrity sha512-FAaDE1Nt+8ff1sPevmiu9liy/moRkDnGX8P4yrrDK6G97fA4SNPumXKEFrdICNtWpfzE8T/60TbIEjrxk9YJAA==
+
 js-sha256@^0.9.0:
   version "0.9.0"
   resolved "https://registry.yarnpkg.com/js-sha256/-/js-sha256-0.9.0.tgz#0b89ac166583e91ef9123644bd3c5334ce9d0966"
@@ -3127,6 +3142,11 @@ queue-microtask@^1.2.2:
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/queue-microtask/-/queue-microtask-1.2.3.tgz#4929228bbc724dfac43e0efb058caf7b6cfb6243"
   integrity sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==
+
+random-words@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/random-words/-/random-words-1.2.0.tgz#94d0cc8061965efe955d60b80ad93392a7edf2f5"
+  integrity sha512-YP2bXrT19pxtBh22DK9CLcWsmBjUBAGzw3JWJycTNbXm1+0aS6PrKuAJ9aLT0GGaPlPp9LExfJIMVkzhrDZE6g==
 
 react-clientside-effect@^1.2.6:
   version "1.2.6"

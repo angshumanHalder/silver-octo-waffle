@@ -27,6 +27,20 @@ impl KeyGen {
             key_image: key_img,
         }
     }
+
+    pub fn gen_keys_from_secret<Hash: Digest<OutputSize = U64> + Clone + Default>(
+        secret: [u8; 32],
+    ) -> Self {
+        let secret: Scalar = Scalar::from_bits(secret);
+        let public: RistrettoPoint = secret * constants::RISTRETTO_BASEPOINT_POINT;
+        let key_img: RistrettoPoint = secret
+            * RistrettoPoint::from_hash(Keccak512::default().chain(public.compress().as_bytes()));
+        Self {
+            private_key: secret,
+            public_key: public,
+            key_image: key_img,
+        }
+    }
 }
 
 pub struct EDKeyGen {

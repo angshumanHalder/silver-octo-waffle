@@ -1,11 +1,7 @@
-import { genSignature, genVoter, genCandidate, genBallot, genVoterFromSecret } from "ring-sig";
+import { genSignature, genCandidate, genBallot, genVoterFromSecret } from "ring-sig";
 
 export const generateCandidate = () => {
   return genCandidate() as CandidateKey;
-};
-
-export const generateVoter = () => {
-  return genVoter() as Voter;
 };
 
 export const generateBallot = (shared_public: Array<number>, candidate_public: Array<number>) => {

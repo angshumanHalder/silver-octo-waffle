@@ -1,14 +1,17 @@
+import { Avatar, Box, Button, Center, Heading, HStack, Text, useColorModeValue } from "@chakra-ui/react";
 import React from "react";
-import { Heading, Avatar, Box, Center, Text, Stack, Button, Link, Badge, useColorModeValue, HStack } from "@chakra-ui/react";
 
 interface CardProps {
-  name: String;
-  partyName: String;
+  name: string;
+  partyName: string;
   showResult: boolean;
   votes?: number;
+  onClickHandler: () => void;
+  disabled: boolean;
+  result: number;
 }
 
-export const Card: React.FC<CardProps> = ({ name, partyName, showResult }) => {
+export const Candidate: React.FC<CardProps> = ({ name, partyName, showResult, onClickHandler, disabled, result }) => {
   return (
     <Center py={6}>
       <Box maxW={"320px"} w={"full"} bg={useColorModeValue("white", "gray.700")} boxShadow={"2xl"} rounded={"lg"} p={6} textAlign={"center"}>
@@ -23,11 +26,18 @@ export const Card: React.FC<CardProps> = ({ name, partyName, showResult }) => {
           <HStack justifyContent="center">
             <Text fontSize={"lg"}>Votes: </Text>
             <Text fontSize={"lg"} fontWeight="bold">
-              600
+              {result}
             </Text>
           </HStack>
         ) : (
-          <Button flex={1} fontSize={"sm"} colorScheme="telegram" boxShadow={"0px 1px 25px -5px rgb(66 153 225 / 48%), 0 10px 10px -5px rgb(66 153 225 / 43%)"}>
+          <Button
+            flex={1}
+            fontSize={"sm"}
+            colorScheme="telegram"
+            boxShadow={"0px 1px 25px -5px rgb(66 153 225 / 48%), 0 10px 10px -5px rgb(66 153 225 / 43%)"}
+            onClick={onClickHandler}
+            disabled={disabled}
+          >
             Vote
           </Button>
         )}

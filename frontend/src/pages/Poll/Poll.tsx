@@ -1,15 +1,22 @@
-import { SimpleGrid, HStack, Text, Flex, Box, Button } from "@chakra-ui/react";
-import { Card } from "../../shared/components/Card";
+import { SimpleGrid, HStack, Text, Flex, Box, Button, Spinner } from "@chakra-ui/react";
+import { Candidate } from "../../shared/components/Candidate";
 import { Layout } from "../../shared/components/Layout";
-import { usePoll } from "./usePoll.logic";
+import { usePoll } from "./hooks/usePoll";
 import { DateTime } from "luxon";
 import VerifyVoter from "./components/VerifyVoter";
+import { VoteCandidate } from "./components/VoteCandidate";
+
+enum PollStatus {
+  REGISTERED = "REGISTERED",
+  STARTED = "STARTED",
+  ENDED = "ENDED",
+}
 
 export const Poll = () => {
   const {
-    state: { poll, isOpen, voterId, invalidText, voterVerified },
-    actions: { addVoterHandler, verifyVoterHandler },
-    reducers: { onOpen, onClose, setVoterId },
+    state: { poll, isOpen, voteModalOpen, VoteCandidateSchema, voting, tallying, startingOrEndingPoll },
+    actions: { onVoteHandler, startPollHandler, endPollHandler, onOpen, onClose, onVoteModalClose, onVoteModalOpen, onTallyHandler },
+    reducers: { setCurrentCandidate },
   } = usePoll();
 
   let date: string = "";
@@ -20,7 +27,18 @@ export const Poll = () => {
 
   const renderCandidates = () => {
     return poll?.candidates.map((candidate) => (
-      <Card key={candidate.name.concat(candidate.party_name.toString())} name={candidate.name} partyName={candidate.party_name} showResult={false} />
+      <Candidate
+        key={candidate.name.concat(candidate.party_name.toString())}
+        name={candidate.name}
+        partyName={candidate.party_name}
+        showResult={poll.poll_status === PollStatus.ENDED}
+        onClickHandler={() => {
+          onVoteModalOpen();
+          setCurrentCandidate(candidate.public_key);
+        }}
+        disabled={poll.poll_status !== PollStatus.STARTED}
+        result={poll.results[candidate.party_name]}
+      />
     ));
   };
 
@@ -33,26 +51,43 @@ export const Poll = () => {
             {date}
           </Text>
         </HStack>
-        <Box>
-          <Button colorScheme="telegram" onClick={onOpen}>
-            Add Voter
-          </Button>
-          <Button colorScheme="red" ml={2}>
-            End Poll
-          </Button>
-        </Box>
+        {poll?.poll_status !== PollStatus.ENDED ? (
+          <Box>
+            <Button colorScheme="telegram" onClick={onOpen}>
+              Add Voter
+            </Button>
+            <Button
+              colorScheme="red"
+              ml={2}
+              onClick={() => {
+                poll?.poll_status === PollStatus.REGISTERED ? startPollHandler() : endPollHandler();
+              }}
+              disabled={startingOrEndingPoll}
+            >
+              {!startingOrEndingPoll ? poll?.poll_status === PollStatus.REGISTERED ? "Start Poll" : "End Poll" : <Spinner size="md" />}
+            </Button>
+          </Box>
+        ) : (
+          <Box>
+            <Button colorScheme="green" onClick={onTallyHandler} disabled={tallying}>
+              {!tallying ? "Tally" : <Spinner />}
+            </Button>
+          </Box>
+        )}
       </Flex>
       <SimpleGrid columns={3} spacing={10}>
         {renderCandidates()}
       </SimpleGrid>
-      <VerifyVoter
-        isOpen={isOpen}
-        onClose={onClose}
-        invalidText={invalidText}
-        verifyVoterHandler={verifyVoterHandler}
-        setVoterId={setVoterId}
-        voterVerified={voterVerified}
-        voterId={voterId}
+      <VerifyVoter isOpen={isOpen} onClose={onClose} />
+      <VoteCandidate
+        onVoteModalClose={() => {
+          onVoteModalClose();
+          setCurrentCandidate(null);
+        }}
+        voteModalOpen={voteModalOpen}
+        VoteCandidateSchema={VoteCandidateSchema}
+        onVoteHandler={onVoteHandler}
+        voting={voting}
       />
     </Layout>
   );

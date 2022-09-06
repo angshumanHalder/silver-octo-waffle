@@ -5,4 +5,6 @@ type Poll = {
   poll_status: string;
   candidates: Array<Candidate>;
   results: { [key: string]: number };
+  shared_pk: Array<number>;
+  voters: number;
 };

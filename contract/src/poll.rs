@@ -63,7 +63,8 @@ pub struct Poll {
     pub candidates: Vec<Candidate>,
     shared_sk: [u8; 32],
     pub shared_pk: [u8; 32],
-    voters: HashSet<[u8; 32]>,
+    voters_s: HashSet<[u8; 32]>,
+    pub voters_v: Vec<[u8; 32]>,
     pub votes: Vec<Vote>,
     pub seen_key_images: HashSet<[u8; 32]>,
     pub results: HashMap<String, u32>,
@@ -78,9 +79,6 @@ impl Poll {
         shared_sk: [u8; 32],
         shared_pk: [u8; 32],
     ) -> Self {
-        // let shared_sk = Scalar::random(&mut OsRng::default());
-        // let shared_pk = constants::ED25519_BASEPOINT_POINT * shared_sk;
-
         let mut results = HashMap::<String, u32>::new();
         for c in candidates.iter() {
             results.insert(c.party_name.clone(), 0);
@@ -94,7 +92,8 @@ impl Poll {
             shared_pk,
             poll_status: PollStatus::REGISTERED,
             candidates,
-            voters: HashSet::<[u8; 32]>::new(),
+            voters_s: HashSet::<[u8; 32]>::new(),
+            voters_v: Vec::<[u8; 32]>::new(),
             votes: Vec::<Vote>::new(),
             seen_key_images: HashSet::<[u8; 32]>::new(),
             results,
@@ -111,7 +110,8 @@ impl Poll {
     }
 
     pub fn add_voter(&mut self, voter: [u8; 32]) -> bool {
-        self.voters.insert(voter);
+        self.voters_s.insert(voter);
+        self.voters_v.push(voter);
         true
     }
 
@@ -120,7 +120,7 @@ impl Poll {
             return false;
         }
         for r in signature.ring.iter() {
-            if !self.voters.contains(r) {
+            if !self.voters_s.contains(r) {
                 return false;
             }
         }
@@ -151,12 +151,19 @@ impl Poll {
 
         let is_verified =
             verify_ballot::<Keccak512>(challenge, responses, ring, key_image, &message);
-        if !is_verified {}
+        if !is_verified {
+            return false;
+        }
         self.votes.push(Vote { ballot, signature });
         true
     }
 
     pub fn tally(&mut self) {
+        let mut results = HashMap::<String, u32>::new();
+        for c in self.candidates.iter() {
+            results.insert(c.party_name.clone(), 0);
+        }
+        self.results = results;
         let shared_sk = Scalar::from_bits(self.shared_sk);
         for vote in &self.votes {
             let r = CompressedEdwardsY(vote.ballot.r).decompress().unwrap();
@@ -178,6 +185,14 @@ impl Poll {
                 }
             }
         }
+    }
+
+    pub fn get_voter(&self, idx: usize) -> [u8; 32] {
+        self.voters_v[idx]
+    }
+
+    pub fn get_voters_count(&self) -> usize {
+        self.voters_v.len()
     }
 }
 

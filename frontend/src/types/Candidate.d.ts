@@ -1,5 +1,5 @@
 type Candidate = {
-  name: String;
-  party_name: String;
+  name: string;
+  party_name: string;
   public_key: Array<number>;
 };

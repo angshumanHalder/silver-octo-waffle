@@ -54,8 +54,8 @@ pub struct Signature {
 
 #[derive(Serialize, Deserialize)]
 pub struct CandidateBallot {
-    sa: [u8; 32],
     r: [u8; 32],
+    sa: [u8; 32],
 }
 
 #[wasm_bindgen(js_name = "genCandidate")]
@@ -107,8 +107,8 @@ pub fn gen_signature(
 
     let de_ballot: CandidateBallot = ballot.into_serde().unwrap();
 
-    let mut message_hash = Keccak512::default().chain(de_ballot.sa);
-    message_hash.update(de_ballot.r);
+    let mut message_hash = Keccak512::default().chain(de_ballot.r);
+    message_hash.update(de_ballot.sa);
 
     let mut message_gen: Vec<u8> = message_hash
         .finalize()

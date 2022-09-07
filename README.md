@@ -8,9 +8,9 @@ This is a POC for anonymous-voting system inspired by the paper [**An efficient 
 Runtime or Compiler dependencies
 ================================
 
-1. rustc and rustup for smart contract
-2. nodejs > 18
-3. wasm-pack
+1. rustc `1.62.1` and rustup `1.25.1` for smart contract
+2. nodejs ^18.0.0
+3. wasm-pack 0.10.3
 
 Quick Start
 ===========

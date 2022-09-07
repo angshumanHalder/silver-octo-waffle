@@ -1,37 +1,34 @@
-near-blank-project
+Silver-Octo-Waffle
 ==================
 
-This app was initialized with [create-near-app]
+This is a POC for anonymous-voting system inspired by the paper [**An efficient and effective Decentralized Anonymous Voting System**](https://arxiv.org/pdf/1804.06674.pdf). The contract is built on Near protocol. The generated ballot is signed by a ring signature to ensure anonimity and the ballot itself is ecrypted by applying unlinkable payments scheme proposed by Nicolas van Saberhagen.
 
+**Note** : _This is not a scalable system and the amount of gas required to decrypt a ballot is quite high._ 
+
+Runtime or Compiler dependencies
+================================
+
+1. rustc `1.62.1` and rustup `1.25.1` for smart contract
+2. nodejs ^18.0.0
+3. wasm-pack 0.10.3
 
 Quick Start
 ===========
 
-If you haven't installed dependencies during setup:
-
-    npm run deps-install
-
-
-Build and deploy your contract to TestNet with a temporary dev account:
-
-    npm run deploy
-
-Test your contract:
-
-    npm test
-
-If you have a frontend, run `npm start`. This will run a dev server.
-
+1. Install dependencies `npm run deps-install`
+2. Deploy smart contract `npm run deploy`
+3. Copy the contract name from contract/neardev/dev-account.env to frontend/.env as VITE_CONTRACT_NAME=${contractname}
+4. Run `npm start` to start the frontend dev server.
 
 Exploring The Code
 ==================
 
-1. The smart-contract code lives in the `/contract` folder. See the README there for
-   more info. In blockchain apps the smart contract is the "backend" of your app.
+1. The smart-contract code lives in the `/contract` folder. In blockchain apps the smart contract is the "backend" of your app.
 2. The frontend code lives in the `/frontend` folder. `/frontend/index.html` is a great
-   place to start exploring. Note that it loads in `/frontend/index.js`,
+   place to start exploring. Note that it loads in `/frontend/index.tsx`,
    this is your entrypoint to learn how the frontend connects to the NEAR blockchain.
-3. Test your contract: `npm test`, this will run the tests in `integration-tests` directory.
+3. Ring signature and code for generating keys are in `/frontend/ring-sig/`.
+4. Run tests on contract: `npm test:unit`, this will run the unit tests. 
 
 
 Deploy
@@ -83,18 +80,10 @@ Modify the line in `src/config.js` that sets the account name of the contract. S
 
     const CONTRACT_NAME = process.env.CONTRACT_NAME || 'near-blank-project.YOUR-NAME.testnet'
 
+Imporovement / Enhancements
+===========================
 
-
-Troubleshooting
-===============
-
-On Windows, if you're seeing an error containing `EPERM` it may be related to spaces in your path. Please see [this issue](https://github.com/zkat/npx/issues/209) for more details.
-
-
-  [create-near-app]: https://github.com/near/create-near-app
-  [Node.js]: https://nodejs.org/en/download/package-manager/
-  [jest]: https://jestjs.io/
-  [NEAR accounts]: https://docs.near.org/concepts/basics/account
-  [NEAR Wallet]: https://wallet.testnet.near.org/
-  [near-cli]: https://github.com/near/near-cli
-  [gh-pages]: https://github.com/tschaub/gh-pages
+1. Move the poll data to a decentralised database or ipfs rather than storing it in smart contract.
+2. We can use Diffie-Hellman key exchange to create the shared public-private key pair instead of storing them in smart contract.
+3. Decrypting a ballot right now takes up high amount of gas and thus large number of ballots cannot be decrypted in a single transaction.
+A better solution is to have a serverless function or a centralised backend that calls the smart contract in a loop to decrypt a single ballot over and over again rather than computing the voting result in a single smart contract call. 

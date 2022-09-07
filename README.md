@@ -42,7 +42,7 @@ When you're ready to make it permanent, here's how:
 Step 0: Install near-cli (optional)
 -------------------------------------
 
-[near-cli] is a command line interface (CLI) for interacting with the NEAR blockchain. It was installed to the local `node_modules` folder when you ran `npm install`, but for best ergonomics you may want to install it globally:
+[near-cli](https://docs.near.org/tools/near-cli) is a command line interface (CLI) for interacting with the NEAR blockchain. It was installed to the local `node_modules` folder when you ran `npm install`, but for best ergonomics you may want to install it globally:
 
     npm install --global near-cli
 
@@ -86,4 +86,4 @@ Imporovement / Enhancements
 1. Move the poll data to a decentralised database or ipfs rather than storing it in smart contract.
 2. We can use Diffie-Hellman key exchange to create the shared public-private key pair instead of storing them in smart contract.
 3. Decrypting a ballot right now takes up high amount of gas and thus large number of ballots cannot be decrypted in a single transaction.
-A better solution is to have a serverless function or a centralised backend that calls the smart contract in a loop to decrypt a single ballot over and over again rather than computing the voting result in a single smart contract call. 
+A better solution is to have a serverless function or a centralised backend that calls the smart contract in a loop to decrypt ballots rather than computing the voting result in a single smart contract call. 

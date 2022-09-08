@@ -15,6 +15,12 @@ Runtime or Compiler dependencies
 Quick Start
 ===========
 
+1. Install docker and docker compose
+2. Run `docker-compose up` in the project directory.
+   
+Manual Start
+===========
+
 1. Install dependencies `npm run deps-install`
 2. Deploy smart contract `npm run deploy`
 3. Copy the contract name from contract/neardev/dev-account.env to frontend/.env as VITE_CONTRACT_NAME=${contractname}

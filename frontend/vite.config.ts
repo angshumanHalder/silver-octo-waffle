@@ -6,6 +6,10 @@ import wasmPack from "vite-plugin-wasm-pack";
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(), wasmPack(["./ring-sig"])],
+  server: {
+    host: true,
+    port: 3000,
+  },
   define: {
     "process.env": process.env,
   },

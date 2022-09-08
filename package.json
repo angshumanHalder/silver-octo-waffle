@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "license": "(MIT AND Apache-2.0)",
   "scripts": {
-    "start": "cd frontend && yarn start",
+    "start": "echo VITE_CONTRACT_NAME=$(cat contract/neardev/dev-account) > ./frontend/.env && cd frontend && yarn start",
     "deploy": "yarn build:contract && cd contract && near dev-deploy --wasmFile ./target/wasm32-unknown-unknown/release/silver_octo_waffle.wasm",
     "build": "yarn build:contract && run build:web",
     "build:web": "cd frontend && yarn build",

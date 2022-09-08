@@ -1,0 +1,11 @@
+version: '3.9'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./dev.dockerfile
+    stdin_open: true
+    tty: true
+    ports:
+      - 3000:3000

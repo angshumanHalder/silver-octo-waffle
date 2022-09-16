@@ -17,10 +17,6 @@ use signature::BLSAG;
 use traits::{GenerateBallot, Sign};
 use wasm_bindgen::prelude::*;
 
-#[cfg(feature = "wee_alloc")]
-#[global_allocator]
-static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
-
 #[cfg(feature = "std")]
 pub use std::vec::Vec;
 
